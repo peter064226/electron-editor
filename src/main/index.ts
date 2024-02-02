@@ -1,13 +1,14 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Notification } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+const fs = require('fs')
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    minWidth: 1024,
+    minHeight: 800,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -49,8 +50,20 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  // IPC
+  ipcMain.on('operation:save', (_, path, doc) => {
+    console.log('path:', path)
+    fs.writeFile(path, doc, (err) => {
+      if (err) {
+        return console.log(err)
+      }
+      const info = 'The file was saved!'
+      new Notification({
+        title: info,
+        body: info
+      }).show()
+    })
+  })
 
   createWindow()
 

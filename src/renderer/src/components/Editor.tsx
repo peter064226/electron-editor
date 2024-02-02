@@ -1,20 +1,21 @@
 import { ReactElement } from 'react'
 import styles from './Editor.module.less'
+import { DocType, OnChangeType } from '@renderer/App'
 
 const Editor = ({
   onChange,
-  document
+  doc,
+  path
 }: {
-  document: string
-  onChange: (newDocument: string) => void
-}): ReactElement => {
+  onChange: OnChangeType
+} & DocType): ReactElement => {
   return (
     <div className={styles.wrapper}>
-      {document ? (
+      {doc || path ? (
         <textarea
           className={styles.editor}
-          value={document}
-          onChange={(e) => onChange(e.target.value)}
+          value={doc}
+          onChange={(e) => onChange({ doc: e.target.value })}
         />
       ) : (
         <div className={styles.tip}>Input</div>
